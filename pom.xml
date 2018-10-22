@@ -113,10 +113,16 @@
     </ciManagement>
 
     <distributionManagement>
-        <repository>
-            <id>sonatype-nexus-staging</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
+      <snapshotRepository>
+        <id>adgear-snapshots-repository</id>
+        <name>Adgear's snapshots repository</name>
+        <url>${snapshotRepoUrl}</url>
+      </snapshotRepository>
+      <repository>
+        <id>adgear-releases-repository</id>
+        <name>Adgear's releases repository</name>
+        <url>${releaseRepoUrl}</url>
+      </repository>
     </distributionManagement>
 
     <dependencies>
