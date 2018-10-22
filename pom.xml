@@ -56,6 +56,9 @@
         <java.version>1.8</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
+        <!-- repository urls -->
+        <releaseRepoUrl>${adgearReleasePublishUrl}</releaseRepoUrl>
+        <snapshotRepoUrl>${adgearSnapshotPublishUrl}</snapshotRepoUrl>
         
         <!-- Dependencies -->
         <memory.version>0.12.0</memory.version>
