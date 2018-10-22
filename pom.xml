@@ -6,7 +6,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.yahoo.datasketches</groupId>
+    <groupId>com.adgear.com.yahoo.datasketches</groupId>
     <artifactId>sketches-core</artifactId>
     <packaging>jar</packaging> <!-- jar is the default -->
     <version>0.12.1-SNAPSHOT</version>
@@ -59,6 +59,7 @@
         
         <!-- Dependencies -->
         <memory.version>0.12.0</memory.version>
+        <metrohash.version>1.0.0</metrohash.version>
         <testng.version>6.14.3</testng.version>
         <slf4j-api.version>1.7.25</slf4j-api.version>
         
@@ -68,7 +69,7 @@
         <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
         <maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
         <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
-        <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
+<!--        <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>-->
         <maven-help-plugin.version>3.1.0</maven-help-plugin.version>
         <maven-install-plugin.version>2.5.2</maven-install-plugin.version>
         <maven-javadoc-plugin.version>3.0.1</maven-javadoc-plugin.version>
@@ -123,6 +124,11 @@
             <groupId>com.yahoo.datasketches</groupId>
             <artifactId>memory</artifactId>
             <version>${memory.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>com.adgear</groupId>
+          <artifactId>metrohash</artifactId>
+          <version>${metrohash.version}</version>
         </dependency>
 
         <!-- Test Scope -->
@@ -222,7 +228,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
             </plugin>
 
-            <plugin>
+<!--            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
                 <executions>
@@ -234,7 +240,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
 
         </plugins>
 
@@ -271,11 +277,11 @@
                     <version>${maven-deploy-plugin.version}</version>
                 </plugin>
 
-                <plugin>
+<!--                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-gpg-plugin</artifactId>
                     <version>${maven-gpg-plugin.version}</version>
-                </plugin>
+                </plugin>-->
 
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

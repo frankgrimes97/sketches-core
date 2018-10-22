@@ -16,6 +16,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import com.yahoo.memory.Memory;
 import com.yahoo.memory.WritableMemory;
 import com.yahoo.sketches.Family;
+import static com.yahoo.sketches.Util.metroHash128;
 
 /**
  * This is a unique-counting sketch that implements the
@@ -272,6 +273,12 @@ public final class CpcSketch {
     if ((datum == null) || datum.isEmpty()) { return; }
     final byte[] data = datum.getBytes(UTF_8);
     final long[] arr = hash(data, seed);
+    hashUpdate(arr[0], arr[1]);
+  }
+
+  public void updateMetroHash128(final String datum) {
+    if ((datum == null) || datum.isEmpty()) { return; }
+    final long[] arr = metroHash128(datum);
     hashUpdate(arr[0], arr[1]);
   }
 
