@@ -213,15 +213,15 @@ public class CpcCBinariesTest {
     try (MapHandle mh = Memory.map(file)) {
       Memory mem = mh.get();
       int cap = (int) mem.getCapacity();
-      byte[] memByteArr = new byte[cap];
-      mem.getByteArray(0, memByteArr, 0, cap);
+      byte[] cppMemByteArr = new byte[cap];
+      mem.getByteArray(0, cppMemByteArr, 0, cap);
 
       CpcSketch sk = new CpcSketch(11);
       for (int i = 0; i < 2000; i++) { sk.update(i); }
-      byte[] mem2ByteArr = sk.toByteArray();
-      Memory mem2 = Memory.wrap(mem2ByteArr);
+      byte[] javaMemByteArr = sk.toByteArray();
+      Memory mem2 = Memory.wrap(javaMemByteArr);
       assertEquals(mem.getCapacity(), mem2.getCapacity());
-      assertEquals(memByteArr, mem2ByteArr);
+      assertEquals(cppMemByteArr, javaMemByteArr);
     }catch (IOException e) {
       e.printStackTrace();
     }
@@ -248,7 +248,7 @@ public class CpcCBinariesTest {
     }
   }
 
-  //@Test //Internal consistency check
+  @Test //Internal consistency check
   public void genSparseSketch() {
     CpcSketch sk = new CpcSketch(11);
     for (int i = 0; i < 100; i++) { sk.update(i); }

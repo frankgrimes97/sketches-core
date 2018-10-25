@@ -6,6 +6,7 @@
 package com.yahoo.sketches.cpc;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.fail;
 
 import java.io.PrintStream;
 
@@ -52,6 +53,7 @@ public class CpcWrapperTest {
 
     Memory concatMem = Memory.wrap(concatArr);
     CompressedCpcWrapper concatSk = new CompressedCpcWrapper(concatMem);
+    assertEquals(concatSk.getLgK(), lgK);
 
     printf("              %12s %12s %12s\n", "Lb", "Est", "Ub");
     double ccEst = concatSk.getEstimate();
@@ -66,7 +68,18 @@ public class CpcWrapperTest {
     double mUb = mergedSk.getUpperBound(2);
     printf("Merged:       %12.0f %12.0f %12.0f\n", mLb, mEst, mUb);
     assertEquals(Family.CPC, CompressedCpcWrapper.getFamily());
+  }
 
+  @SuppressWarnings("unused")
+  @Test
+  public void checkIsCompressed() {
+    CpcSketch sk = new CpcSketch(10);
+    byte[] byteArr = sk.toByteArray();
+    byteArr[5] &= (byte) -3;
+    try {
+      CompressedCpcWrapper wrapper = new CompressedCpcWrapper(Memory.wrap(byteArr));
+      fail();
+    } catch (AssertionError e) {}
   }
 
   /**

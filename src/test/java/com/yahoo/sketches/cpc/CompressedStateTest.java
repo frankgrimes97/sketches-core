@@ -6,11 +6,13 @@
 package com.yahoo.sketches.cpc;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.fail;
 
 import java.io.PrintStream;
 
 import org.testng.annotations.Test;
 
+import com.yahoo.memory.Memory;
 import com.yahoo.memory.WritableMemory;
 
 /**
@@ -88,6 +90,17 @@ public class CompressedStateTest {
     for (int i = 1; i < 600; i++) { sketch.update(i); }
     state = CompressedState.compress(sketch);
     println(CompressedState.toString(state, true));
+  }
+
+  @Test
+  public void checkIsCompressed() {
+    CpcSketch sk = new CpcSketch(10);
+    byte[] byteArr = sk.toByteArray();
+    byteArr[5] &= (byte) -3;
+    try {
+      CompressedState.importFromMemory(Memory.wrap(byteArr));
+      fail();
+    } catch (AssertionError e) {}
   }
 
   /**

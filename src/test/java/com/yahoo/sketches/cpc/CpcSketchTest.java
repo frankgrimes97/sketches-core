@@ -9,12 +9,15 @@ import static com.yahoo.sketches.Util.DEFAULT_UPDATE_SEED;
 import static com.yahoo.sketches.cpc.TestUtil.specialEquals;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 
 import java.io.PrintStream;
 
 import org.testng.annotations.Test;
 
+import com.yahoo.memory.Memory;
 import com.yahoo.sketches.Family;
+import com.yahoo.sketches.SketchesArgumentException;
 
 /**
  * @author Lee Rhodes
@@ -150,6 +153,18 @@ public class CpcSketchTest {
   public void checkLgK() {
     CpcSketch sk = new CpcSketch(10);
     assertEquals(sk.getLgK(), 10);
+    try {
+      sk = new CpcSketch(3);
+      fail();
+    } catch (SketchesArgumentException e) {}
+  }
+
+  @Test
+  public void checkIconHipUBLBLg15() {
+    CpcConfidence.getIconConfidenceUB(15, 1, 2);
+    CpcConfidence.getIconConfidenceLB(15, 1, 2);
+    CpcConfidence.getHipConfidenceUB(15, 1, 1.0, 2);
+    CpcConfidence.getHipConfidenceLB(15, 1, 1.0, 2);
   }
 
   @Test
@@ -168,7 +183,8 @@ public class CpcSketchTest {
     CpcSketch sk = new CpcSketch(lgK);
     assertTrue(sk.isEmpty());
     byte[] byteArray = sk.toByteArray();
-    CpcSketch sk2 = CpcSketch.heapify(byteArray);
+    Memory mem = Memory.wrap(byteArray);
+    CpcSketch sk2 = CpcSketch.heapify(mem);
     assertTrue(specialEquals(sk2, sk, false, false));
   }
 
@@ -178,6 +194,14 @@ public class CpcSketchTest {
     CpcSketch sk = new CpcSketch(lgK, DEFAULT_UPDATE_SEED);
     sk.rowColUpdate(0);
     assertEquals(sk.getFlavor(), Flavor.SPARSE);
+  }
+
+  @Test
+  public void checkGetMaxSize() {
+    final int size4  = CpcSketch.getMaxSerializedBytes(4);
+    final int size26 = CpcSketch.getMaxSerializedBytes(26);
+    assertEquals(size4, 24 + 40);
+    assertEquals(size26, (int) ((0.6 * (1 << 26)) + 40));
   }
 
   /**
