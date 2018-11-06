@@ -9,7 +9,10 @@ import static com.yahoo.sketches.Util.DEFAULT_UPDATE_SEED;
 import static com.yahoo.sketches.Util.checkSeedHashes;
 import static com.yahoo.sketches.Util.computeSeedHash;
 import static com.yahoo.sketches.Util.invPow2;
+import static com.yahoo.sketches.Util.zeroPad;
+import static com.yahoo.sketches.cpc.CpcUtil.bitMatrixOfSketch;
 import static com.yahoo.sketches.cpc.CpcUtil.checkLgK;
+import static com.yahoo.sketches.cpc.CpcUtil.countBitsSetInMatrix;
 import static com.yahoo.sketches.hash.MurmurHash3.hash;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -375,6 +378,22 @@ public final class CpcSketch {
   }
 
   /**
+   * Convience function that this Sketch is valid. This is a troubleshooting tool
+   * for sketches that have been heapified from serialized images.
+   *
+   * <p>If you are starting with a serialized image as a byte array, first heapify
+   * the byte array to a sketch, which performs a number of checks. Then use this
+   * function as one additional check on the sketch.</p>
+   *
+   * @return true if this sketch is validated.
+   */
+  public boolean validate() {
+    final long[] bitMatrix = bitMatrixOfSketch(this);
+    final long matrixCoupons = countBitsSetInMatrix(bitMatrix);
+    return matrixCoupons == numCoupons;
+  }
+
+  /**
    * Returns the current Flavor of this sketch.
    * @return the current Flavor of this sketch.
    */
@@ -669,7 +688,7 @@ public final class CpcSketch {
   public String toString(final boolean detail) {
     final int numPairs = (pairTable == null) ? 0 : pairTable.getNumPairs();
     final StringBuilder sb = new StringBuilder();
-    sb.append("CpcSketch").append(LS);
+    sb.append("### CPD SKETCH - PREAMBLE:").append(LS);
     sb.append("  Flavor       : ").append(getFlavor()).append(LS);
     sb.append("  lgK          : ").append(lgK).append(LS);
     sb.append("  seed         : ").append(seed).append(LS);
@@ -683,17 +702,44 @@ public final class CpcSketch {
     sb.append("  kxp          : ").append(kxp).append(LS);
     sb.append("  hipAccum     : ").append(hipEstAccum).append(LS);
     if (detail) {
+      sb.append(LS).append("### CPC SKETCH - DATA").append(LS);
       if (pairTable != null) {
         sb.append(pairTable.toString(true));
       }
       if (slidingWindow != null) {
-        sb.append("  SlidingWindow  : ").append(LS);
+        sb.append("SlidingWindow  : ").append(LS);
+        sb.append("    Index Bits (lsb ->)").append(LS);
         for (int i = 0; i < slidingWindow.length; i++) {
-          sb.append(String.format("%8d %6d" + LS, i, slidingWindow[i]));
+
+          final String bits = zeroPad(Integer.toBinaryString(slidingWindow[i] & 0XFF), 8);
+          sb.append(String.format("%9d %8s" + LS, i, bits));
         }
       }
     }
+    sb.append("### END CPC SKETCH");
     return sb.toString();
+  }
+
+  /**
+   * Returns a human readable string of the preamble of a byte array image of a CpcSketch.
+   * @param byteArr the given byte array
+   * @param detail if true, a dump of the compressed window and surprising value streams will be
+   * included.
+   * @return a human readable string of the preamble of a byte array image of a CpcSketch.
+   */
+  public static String toString(final byte[] byteArr, final boolean detail) {
+    return PreambleUtil.toString(byteArr, detail);
+  }
+
+  /**
+   * Returns a human readable string of the preamble of a Memory image of a CpcSketch.
+   * @param mem the given Memory
+   * @param detail if true, a dump of the compressed window and surprising value streams will be
+   * included.
+   * @return a human readable string of the preamble of a Memory image of a CpcSketch.
+   */
+  public static String toString(final Memory mem, final boolean detail) {
+    return PreambleUtil.toString(mem, detail);
   }
 
   private static void fillKxpByteLookup() { //called from static initializer

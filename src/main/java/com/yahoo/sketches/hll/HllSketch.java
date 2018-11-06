@@ -407,6 +407,24 @@ public class HllSketch extends BaseHllSketch {
     return sb.toString();
   }
 
+  /**
+   * Returns a human readable string of the preamble of a byte array image of an HllSketch.
+   * @param byteArr the given byte array
+   * @return a human readable string of the preamble of a byte array image of an HllSketch.
+   */
+  public static String toString(final byte[] byteArr) {
+    return PreambleUtil.toString(byteArr);
+  }
+
+  /**
+   * Returns a human readable string of the preamble of a Memory image of an HllSketch.
+   * @param mem the given Memory object
+   * @return a human readable string of the preamble of a Memory image of an HllSketch.
+   */
+  public static String toString(final Memory mem) {
+    return PreambleUtil.toString(mem);
+  }
+
   //restricted methods
 
   /**
