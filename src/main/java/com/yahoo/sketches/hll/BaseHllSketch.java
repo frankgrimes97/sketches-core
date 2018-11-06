@@ -12,7 +12,6 @@ import static com.yahoo.sketches.hll.HllUtil.KEY_MASK_26;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import com.yahoo.memory.Memory;
-import static com.yahoo.sketches.Util.metroHash128;
 
 /**
  * Although this class is package-private, it provides a single place to define and document
@@ -279,9 +278,8 @@ abstract class BaseHllSketch {
     couponUpdate(coupon(hash(data, DEFAULT_UPDATE_SEED)));
   }
 
-  public void updateMetroHash128(final String datum) {
-    if ((datum == null) || datum.isEmpty()) { return; }
-    couponUpdate(coupon(metroHash128(datum)));
+  public void updateHash(final long[] hash) {
+    couponUpdate(coupon(hash));
   }
 
   /**
