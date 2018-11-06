@@ -444,6 +444,24 @@ public abstract class Sketch {
     return sb.toString();
   }
 
+  /**
+   * Returns a human readable string of the preamble of a byte array image of a Theta Sketch.
+   * @param byteArr the given byte array
+   * @return a human readable string of the preamble of a byte array image of a Theta Sketch.
+   */
+  public static String toString(final byte[] byteArr) {
+    return PreambleUtil.preambleToString(byteArr);
+  }
+
+  /**
+   * Returns a human readable string of the preamble of a Memory image of a Theta Sketch.
+   * @param mem the given Memory object
+   * @return a human readable string of the preamble of a Memory image of a Theta Sketch.
+   */
+  public static String toString(final Memory mem) {
+    return PreambleUtil.preambleToString(mem);
+  }
+
   //Restricted methods
 
   /**
