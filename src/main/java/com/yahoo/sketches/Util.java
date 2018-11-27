@@ -9,10 +9,6 @@ import static com.yahoo.sketches.hash.MurmurHash3.hash;
 import static java.lang.Math.log;
 import static java.lang.Math.pow;
 import static java.lang.Math.round;
-import java.math.BigInteger;
-import java.nio.ByteBuffer;
-import static java.nio.charset.StandardCharsets.UTF_8;
-import util.hash.MetroHash128;
 
 /**
  * Common utility functions.
@@ -615,19 +611,4 @@ public final class Util {
     return (n1 < n2) ^ ((n1 < 0) != (n2 < 0));
   }
 
-  private static final long METROHASH_DEFAULT_SEED = new BigInteger("18014475172444421775").longValue();
-
-  public static long[] metroHash128(final String value, final long seed) {
-    final MetroHash128 metroHash128 = new MetroHash128(METROHASH_DEFAULT_SEED);
-    metroHash128.apply(
-       ByteBuffer.wrap(
-         value.getBytes(UTF_8)
-       )
-    );
-    return new long[] {metroHash128.getHigh(), metroHash128.getLow()};
-  }
-
-  public static long[] metroHash128(final String value) {
-    return metroHash128(value, METROHASH_DEFAULT_SEED);
-  }
 }

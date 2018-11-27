@@ -62,7 +62,6 @@
         
         <!-- Dependencies -->
         <memory.version>0.12.0</memory.version>
-        <metrohash.version>1.0.0</metrohash.version>
         <testng.version>6.14.3</testng.version>
         <slf4j-api.version>1.7.25</slf4j-api.version>
         
@@ -133,11 +132,6 @@
             <groupId>com.yahoo.datasketches</groupId>
             <artifactId>memory</artifactId>
             <version>${memory.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>com.adgear</groupId>
-          <artifactId>metrohash</artifactId>
-          <version>${metrohash.version}</version>
         </dependency>
 
         <!-- Test Scope -->
