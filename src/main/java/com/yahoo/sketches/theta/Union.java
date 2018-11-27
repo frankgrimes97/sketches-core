@@ -44,6 +44,8 @@ public abstract class Union extends SetOperation {
    */
   public abstract CompactSketch getResult();
 
+  public abstract UpdateSketch getUpdatableResult();
+
   /**
    * Resets this Union. The seed remains intact, otherwise reverts back to its virgin state.
    */

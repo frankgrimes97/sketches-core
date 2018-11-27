@@ -207,6 +207,11 @@ final class UnionImpl extends Union {
   }
 
   @Override
+  public UpdateSketch getUpdatableResult() {
+    return gadget_;
+  }
+
+  @Override
   public void reset() {
     gadget_.reset();
     unionThetaLong_ = gadget_.getThetaLong();
