@@ -37,10 +37,17 @@ public class KllFloatsSketchTest {
   }
 
   @Test(expectedExceptions = SketchesArgumentException.class)
-  public void checkBadGetQuantiles() {
+  public void getQuantileInvalidArg() {
     final KllFloatsSketch sketch = new KllFloatsSketch();
     sketch.update(1);
     sketch.getQuantile(-1.0);
+  }
+
+  @Test(expectedExceptions = SketchesArgumentException.class)
+  public void getQuantilesInvalidArg() {
+    final KllFloatsSketch sketch = new KllFloatsSketch();
+    sketch.update(1);
+    sketch.getQuantiles(new double[] {2.0});
   }
 
   @Test
@@ -279,6 +286,7 @@ public class KllFloatsSketchTest {
     for (int i = 0; i < 1000; i++) {
       sketch.update(i);
     }
+    assertEquals(sketch.getK(), KllFloatsSketch.MIN_K);
     assertEquals(sketch.getQuantile(0.5), 500, 500 * PMF_EPS_FOR_K_8);
   }
 
@@ -288,6 +296,7 @@ public class KllFloatsSketchTest {
     for (int i = 0; i < 1000; i++) {
       sketch.update(i);
     }
+    assertEquals(sketch.getK(), KllFloatsSketch.MAX_K);
     assertEquals(sketch.getQuantile(0.5), 500, 500 * PMF_EPS_FOR_K_256);
   }
 
@@ -381,6 +390,20 @@ public class KllFloatsSketchTest {
   public void checkIntCapAux() {
     final int lvlCap = KllHelper.levelCapacity(10, 100, 50, 8);
     assertEquals(lvlCap, 8);
+  }
+
+  @Test
+  public void getQuantiles() {
+    final KllFloatsSketch sketch = new KllFloatsSketch();
+    sketch.update(1);
+    sketch.update(2);
+    sketch.update(3);
+    final float[] quantiles1 = sketch.getQuantiles(new double[] {0, 0.5, 1}); 
+    final float[] quantiles2 = sketch.getQuantiles(3);
+    assertEquals(quantiles1, quantiles2);
+    assertEquals(quantiles1[0], 1f);
+    assertEquals(quantiles1[1], 2f);
+    assertEquals(quantiles1[2], 3f);
   }
 
 }

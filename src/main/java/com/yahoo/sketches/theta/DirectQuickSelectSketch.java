@@ -203,7 +203,7 @@ class DirectQuickSelectSketch extends DirectQuickSelectSketchR {
   }
 
   @Override
-  public final void reset() {
+  public void reset() {
     //clear hash table
     //hash table size and hashTableThreshold stays the same
     //lgArrLongs stays the same
@@ -211,7 +211,7 @@ class DirectQuickSelectSketch extends DirectQuickSelectSketchR {
     final int arrLongs = 1 << getLgArrLongs();
     final int preambleLongs = mem_.getByte(PREAMBLE_LONGS_BYTE) & 0X3F;
     final int preBytes = preambleLongs << 3;
-    mem_.clear(preBytes, arrLongs * 8); //clear data array
+    mem_.clear(preBytes, arrLongs * 8L); //clear data array
     //flags: bigEndian = readOnly = compact = ordered = false; empty = true.
     mem_.putByte(FLAGS_BYTE, (byte) EMPTY_FLAG_MASK);
     mem_.putInt(RETAINED_ENTRIES_INT, 0);
@@ -231,7 +231,7 @@ class DirectQuickSelectSketch extends DirectQuickSelectSketchR {
     final int lgNomLongs = getLgNomLongs();
     //The over-theta test
     if (HashOperations.continueCondition(thetaLong, hash)) {
-      return RejectedOverTheta; //signal that hash was rejected due to theta.
+      return RejectedOverTheta; //signal that hash was rejected due to theta or zero.
     }
 
     final int lgArrLongs = getLgArrLongs();

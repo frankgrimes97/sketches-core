@@ -19,6 +19,7 @@ import java.util.Arrays;
 import com.yahoo.memory.Memory;
 import com.yahoo.sketches.ByteArrayUtil;
 import com.yahoo.sketches.Family;
+import com.yahoo.sketches.QuantilesHelper;
 import com.yahoo.sketches.SketchesArgumentException;
 import com.yahoo.sketches.Util;
 
@@ -280,6 +281,14 @@ public class KllFloatsSketch {
   }
 
   /**
+   * Returns the parameter k
+   * @return parameter k
+   */
+  public int getK() {
+    return k_;
+  }
+
+  /**
    * Returns the length of the input stream.
    * @return stream length
    */
@@ -456,6 +465,9 @@ public class KllFloatsSketch {
     final float[] quantiles = new float[fractions.length];
     for (int i = 0; i < fractions.length; i++) {
       final double fraction = fractions[i];
+      if (fraction < 0.0 || fraction > 1.0) {
+        throw new SketchesArgumentException("Fraction cannot be less than zero or greater than 1.0");
+      }
       if      (fraction == 0.0) { quantiles[i] = minValue_; }
       else if (fraction == 1.0) { quantiles[i] = maxValue_; }
       else {
@@ -466,6 +478,25 @@ public class KllFloatsSketch {
       }
     }
     return quantiles;
+  }
+
+  /**
+   * This is also a more efficient multiple-query version of getQuantile() and allows the caller to
+   * specify the number of evenly spaced fractional ranks.
+   *
+   * <p>If the sketch is empty this returns null.
+   *
+   * @param numEvenlySpaced an integer that specifies the number of evenly spaced fractional ranks.
+   * This must be a positive integer greater than 0. A value of 1 will return the min value.
+   * A value of 2 will return the min and the max value. A value of 3 will return the min,
+   * the median and the max value, etc.
+   *
+   * @return array of approximations to the given fractions in the same order as given fractions
+   * array.
+   */
+  public float[] getQuantiles(final int numEvenlySpaced) {
+    if (isEmpty()) { return null; }
+    return getQuantiles(QuantilesHelper.getEvenlySpacedRanks(numEvenlySpaced));
   }
 
   /**
@@ -734,28 +765,28 @@ public class KllFloatsSketch {
       | (isLevelZeroSorted_ ? 1 << Flags.IS_LEVEL_ZERO_SORTED.ordinal() : 0)
       | (isSingleItem ? 1 << Flags.IS_SINGLE_ITEM.ordinal() : 0)
     );
-    ByteArrayUtil.putShort(bytes, K_SHORT, (short) k_);
+    ByteArrayUtil.putShortLE(bytes, K_SHORT, (short) k_);
     bytes[M_BYTE] = (byte) m_;
     if (isEmpty()) { return bytes; }
     int offset = DATA_START_SINGLE_ITEM;
     if (!isSingleItem) {
-      ByteArrayUtil.putLong(bytes, N_LONG, n_);
-      ByteArrayUtil.putShort(bytes, MIN_K_SHORT, (short) minK_);
+      ByteArrayUtil.putLongLE(bytes, N_LONG, n_);
+      ByteArrayUtil.putShortLE(bytes, MIN_K_SHORT, (short) minK_);
       bytes[NUM_LEVELS_BYTE] = (byte) numLevels_;
       offset = DATA_START;
       // the last integer in levels_ is not serialized because it can be derived
       for (int i = 0; i < numLevels_; i++) {
-        ByteArrayUtil.putInt(bytes, offset, levels_[i]);
+        ByteArrayUtil.putIntLE(bytes, offset, levels_[i]);
         offset += Integer.BYTES;
       }
-      ByteArrayUtil.putFloat(bytes, offset, minValue_);
+      ByteArrayUtil.putFloatLE(bytes, offset, minValue_);
       offset += Float.BYTES;
-      ByteArrayUtil.putFloat(bytes, offset, maxValue_);
+      ByteArrayUtil.putFloatLE(bytes, offset, maxValue_);
       offset += Float.BYTES;
     }
     final int numItems = getNumRetained();
     for (int i = 0; i < numItems; i++) {
-      ByteArrayUtil.putFloat(bytes, offset, items_[levels_[0] + i]);
+      ByteArrayUtil.putFloatLE(bytes, offset, items_[levels_[0] + i]);
       offset += Float.BYTES;
     }
     return bytes;
